@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calcolo Prezzi</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="pageContainer">
+        <div class="flex-item">
+            <div>
+                <label for="acquisto">Prezzo di acquisto</label>
+                <input type="number" name="acquisto" id="acquisto" value=0 min=0 onchange="acquisto()">
+            </div>
+            <div>
+                <label for="corriere">Corriere</label>
+                <select id="corriere" name="corriere" onclick="corriere()">
+                    <option value="4.77">ZeroTre</option>
+                    <option value="6.26">ZeroQuindici</option>
+                    <option value="9.03">ZeroTenta</option>
+                </select>
+            </div>
+
+            <button onclick="reset()">Reset</button>
+        </div>
+        <div class="flex-item">
+            <table>
+                <thead>
+                    <tr>
+                        <td colspan="2">Costi</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><label for="unita">Quantità</label></td>
+                        <td><input type="number" name="unita" id="unita" value="1" min="1" onchange="prezzo()">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><label for="pbase">Prezzo Base</label></td>
+                        <td><input type="number" name="pbase" id="pbase" value=0 min=0 onclick="" onchange="prezzo()"
+                                autofocus></td>
+                    </tr>
+                    <tr>
+                        <td><label for="tasse">Tasse</label></td>
+                        <td><input type="number" name="tasse" id="tasse" value=0 min=0 onchange="prezzo()"></td>
+                    </tr>
+                    <tr>
+                        <td><label for="spedizione">Spedizione</label></td>
+                        <td><input type="number" name="spedizione" id="spedizione" value=0 min=0 onchange="prezzo()">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Prezzo Ivato</td>
+                        <td><input type="text" id="ivato" value="0" disabled></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <table>
+                <thead>
+                    <tr>
+                        <td></td>
+                        <th colspan="2">E-Bay</th>
+                        <th colspan="2">Amazon</th>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <th>Prezzo</th>
+                        <th>Guadagno</th>
+                        <th>Prezzo</th>
+                        <th>Guadagno</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th>15%</th>
+                        <td>€ <span id='me15'>0.00</span></td>
+                        <td>€ <span id='ge15'>0.00</span></td>
+                        <td>€ <span id='ma15'>0.00</span></td>
+                        <td>€ <span id='ga15'>0.00</span></td>
+
+                    </tr>
+                    <tr>
+                        <th>12%</th>
+                        <td>€ <span id='me12'>0.00</span></td>
+                        <td>€ <span id='ge12'>0.00</span></td>
+                        <td>€ <span id='ma12'>0.00</span></td>
+                        <td>€ <span id='ga12'>0.00</span></td>
+
+                    </tr>
+                    <tr>
+                        <th>6%</th>
+                        <td>€ <span id='me6'>0.00</span></td>
+                        <td>€ <span id='ge6'>0.00</span></td>
+                        <td>€ <span id='ma6'>0.00</span></td>
+                        <td>€ <span id='ga6'>0.00</span></td>
+
+                    </tr>
+                    <tr>
+                        <th>4%</th>
+                        <td>€ <span id='me4'>0.00</span></td>
+                        <td>€ <span id='ge4'>0.00</span></td>
+                        <td>€ <span id='ma4'>0.00</span></td>
+                        <td>€ <span id='ga4'>0.00</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="secondContainer">
+            <div class="flex-item">
+                <label for="prezzo">Prezzo</label>
+                <input type="number" name="prezzo" id="prezzo" value=0 min=0 onchange="autoprezzo()">
+            </div>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Piattaforma</th>
+                        <th>Netto</th>
+                        <th>Margine</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Prestashop</th>
+                        <td>€ <span id="prezzosito">0.00</span></td>
+                        <td><span id="marginesito">0.00</span> %</td>
+                    </tr>
+                    <tr>
+                        <td>Ebay</th>
+                        <td>€ <span id="prezzoebay">0.00</span></td>
+                        <td> <span id="margineebay">0.00</span> %</td>
+                    </tr>
+                    <tr>
+                        <td>Amazon</th>
+                        <td>€ <span id="prezzoamazon">0.00</span></td>
+                        <td><span id="margineamazon">0.00</span> %</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+        let costi = 0;
+
+        function prezzo() {
+            //inserimento dati tramite id
+            let qt = document.getElementById('unita').value;
+            let pbase = document.getElementById('pbase').value;
+            let tasse = document.getElementById('tasse').value;
+            let spedizione = document.getElementById('spedizione').value;
+            //Operazioni
+            let ivato = (Number(pbase) + Number(tasse)) * 1.22 * qt;
+            let costi = ivato + Number(spedizione);
+            //variabili margini Ebay (es.me15 = margine 15%)
+            let me15 = (costi + costi * 0.2063) / 0.877
+            let me12 = (costi + costi * 0.1586) / 0.877;
+            let me6 = (costi + costi * 0.0735) / 0.877;
+            let me4 = (costi + costi * 0.0479) / 0.877;
+            //Variabili dei Guadagni Ebay
+            let ge15 = me15 - me15 * 0.123 - costi;
+            let ge12 = me12 - me12 * 0.123 - costi;
+            let ge6 = me6 - me6 * 0.123 - costi;
+            let ge4 = me4 - me4 * 0.123 - costi;
+            //Variabili dei margini Amazon (es.ma15 = margine 15%)
+            let ma15 = (costi + costi * 0.2158) / 0.845;
+            let ma12 = (costi + costi * 0.1656) / 0.845;
+            let ma6 = (costi + costi * 0.0765) / 0.845;
+            let ma4 = (costi + costi * 0.0498) / 0.845;
+            //Variabili dei Guadagni Amazon
+            let ga15 = ma15 - ma15 * 0.155 - costi;
+            let ga12 = ma12 - ma12 * 0.155 - costi;
+            let ga6 = ma6 - ma6 * 0.155 - costi;
+            let ga4 = ma4 - ma4 * 0.155 - costi;
+            //riportare i valori in html
+            document.getElementById('ivato').value = "€ " + ivato.toFixed(2);
+            //margini Ebay
+            document.getElementById('me15').innerHTML = me15.toFixed(2);
+            document.getElementById('me12').innerHTML = me12.toFixed(2);
+            document.getElementById('me6').innerHTML = me6.toFixed(2);
+            document.getElementById('me4').innerHTML = me4.toFixed(2);
+            //guadagno Ebay
+            document.getElementById('ge15').innerHTML = ge15.toFixed(2);
+            document.getElementById('ge12').innerHTML = ge12.toFixed(2);
+            document.getElementById('ge6').innerHTML = ge6.toFixed(2);
+            document.getElementById('ge4').innerHTML = ge4.toFixed(2);
+            //margini Amazon
+            document.getElementById('ma15').innerHTML = ma15.toFixed(2);
+            document.getElementById('ma12').innerHTML = ma12.toFixed(2);
+            document.getElementById('ma6').innerHTML = ma6.toFixed(2);
+            document.getElementById('ma4').innerHTML = ma6.toFixed(2);
+            //guadagno Amazon
+            document.getElementById('ga15').innerHTML = ga15.toFixed(2);
+            document.getElementById('ga12').innerHTML = ga12.toFixed(2);
+            document.getElementById('ga6').innerHTML = ga6.toFixed(2);
+            document.getElementById('ga4').innerHTML = ga4.toFixed(2);
+        }
+
+        function acquisto() {
+            let acquisto = document.getElementById('acquisto').value * 1.05;
+            document.getElementById('pbase').value = acquisto.toFixed(2);
+            prezzo();
+        }
+
+        function autoprezzo() {
+            let prezzoscelto = document.getElementById('prezzo').value;
+            if (prezzoscelto > 0) {
+                let aqt = document.querySelector('unita').value;
+                let apbase = document.getElementById('pbase').value;
+                let atasse = document.getElementById('tasse').value;
+                let aspedizione = document.getElementById('spedizione').value;
+                let aivato = (Number(apbase) + Number(atasse)) * 1.22 * aqt;
+                let acosti = aivato + Number(aspedizione);
+                let prezzoEbay = prezzoscelto - prezzoscelto * 0.123 - acosti;
+                let prezzoAmazon = prezzoscelto - prezzoscelto * 0.155 - acosti;
+                let prezzosito = prezzoscelto - acosti;
+                let margineEbay = (prezzoEbay / prezzoscelto) * 100;
+                let margineAmazon = (prezzoAmazon / prezzoscelto) * 100;
+                let marginesito = (acosti / prezzosito) * 100;
+                document.getElementById('prezzoebay').innerHTML = prezzoEbay.toFixed(2);
+                document.getElementById('prezzoamazon').innerHTML = prezzoAmazon.toFixed(2);
+                document.getElementById('margineebay').innerHTML = margineEbay.toFixed(2);
+                document.getElementById('margineamazon').innerHTML = margineAmazon.toFixed(2);
+                document.getElementById('prezzosito').innerHTML = prezzosito.toFixed(2);
+                document.getElementById('marginesito').innerHTML = prezzosito.toFixed(2);
+            }
+
+        }
+
+        function corriere() {
+            let corriere = document.getElementById('corriere').value;
+            document.getElementById("spedizione").disabled = true;
+            document.getElementById('spedizione').value = corriere;
+            prezzo();
+            autoprezzo();
+        }
+
+        function reset() {
+            document.getElementById('unita').value = 1;
+            document.getElementById('pbase').value = 0;
+            document.getElementById('tasse').value = 0;
+            document.getElementById('spedizione').value = 0;
+            document.getElementById('prezzo').value = 0;
+            prezzo();
+            document.getElementById('prezzoebay').innerHTML = '0';
+            document.getElementById('prezzoamazon').innerHTML = '0';
+            document.getElementById('margineebay').innerHTML = '0';
+            document.getElementById('margineamazon').innerHTML = '0';
+            document.getElementById('prezzosito').innerHTML = '0';
+            document.getElementById('marginesito').innerHTML = '0';
+            document.getElementById('spedizione').disabled = false;
+
+        }
+
+
+    </script>
+</body>
+
+</html>
